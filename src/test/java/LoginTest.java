@@ -1,24 +1,39 @@
+import base.BaseTest;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import pages.LoginPage;
+import pages.MainPage;
 
-public class LoginTest {
+public class LoginTest extends BaseTest {
+    LoginPage loginPage = new LoginPage();
+    MainPage mainPage = new MainPage();
 
     @Test
-    public void loginSuccessful() throws InterruptedException {
-        WebDriver driver = new ChromeDriver();
-        driver.get("https://www.trendyol.com/giris");
-        driver.manage().window().fullscreen(); //screen setting
-        driver.findElement(By.id("login-email")).sendKeys("ririwer150@perceint.com");
-        driver.findElement(By.name("login-password")).sendKeys("Fidantest123.");
-        driver.findElement(By.cssSelector("[class='q-primary q-fluid q-button-medium q-button submit']")).click();
-        Thread.sleep(3000);
-        String text = driver.findElements(By.cssSelector("[class='link-text']")).get(0).getText(); // if more than one of the same class, use the "get()" method
-        System.out.println(text);
-        Assert.assertEquals(text,"Hesabım"); //comparison for Expected and Actual
-        driver.quit();
+    public void loginSuccessful() {
+        loginPage.fillEmail(email)
+                .fillPassword(password)
+                .clickLogin();
 
+        sleep(3000);
+        mainPage.accountControl("Hesabım");
     }
+
+    @Test
+    public void loginUnSuccessful(){
+        loginPage.fillEmail(email)
+                .fillPassword("asd123")
+                .clickLogin();
+        sleep(3000);
+
+        loginPage.errorMessageControl("E-posta adresiniz ve/veya şifreniz hatalı.")
+                .fillEmail("asd@gmail.com")
+                .clickLogin();
+        sleep(3000);
+
+        loginPage.errorMessageControl("E-posta adresiniz ve/veya şifreniz hatalı.");
+    }
+
+
 }
